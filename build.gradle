@@ -1,0 +1,34 @@
+plugins {
+    id 'java'
+    id 'application'
+}
+
+repositories { mavenCentral() }
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+dependencies {
+    // JARs REAIS do Pedro Pathing e do SDK (se houver) devem ficar em libs/real: entram antes dos stubs no classpath
+    runtimeOnly fileTree(dir: 'libs/real', include: ['*.jar'])
+    // API do FTC SDK 12.0, Pedro Pathing 2.1.2 e FTC Dashboard 0.6.0 gerada do dex do projeto da equipe (somente assinaturas)
+    implementation files('libs/ftc-stubs.jar')
+}
+
+application {
+    mainClass = 'biobuzz.Viewer'
+}
+
+tasks.register('selfTest', JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'biobuzz.SelfTest'
+}
+
+tasks.register('sdkTest', JavaExec) {
+    classpath = sourceSets.main.runtimeClasspath
+    mainClass = 'biobuzz.sdk.SdkSelfTest'
+    // para rodar o TeleOp original: ./gradlew sdkTest -Pteamcode=<TeamCode/src/main/java>
+    if (project.hasProperty('teamcode')) systemProperty 'biobuzz.teamcode', project.property('teamcode')
+}
