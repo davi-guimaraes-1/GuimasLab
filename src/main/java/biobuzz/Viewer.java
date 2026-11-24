@@ -202,6 +202,7 @@ public final class Viewer {
         l.add(" WASD stick esq   Q/E stick dir");
         l.add(" setas dpad   J K L I = A B X Y");
         l.add(" U/O bumpers   ENTER = START do OpMode");
+        l.add(" (um controle no PC tem prioridade)");
         l.add(" C colisao   R reinicia   M menu");
         return l;
     }

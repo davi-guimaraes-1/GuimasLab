@@ -280,12 +280,12 @@ public final class Match {
     }
 
     /**
-     * Anexo coletor: projetado por baixo da FLOWER e recolhido, puxa o Pollen do fundo da pilha. O Pollen sai pela
-     * abertura de retirada e rola em direcao ao robo (o intake o pega). O Nectar e grande demais para sair.
+     * Anexo coletor (passivo): enquanto estiver projetado por baixo da FLOWER e bem posicionado, derruba o Pollen do fundo
+     * da pilha, um a cada ATTACH_DROP_INTERVAL, ate esvaziar. O Pollen sai pela abertura de retirada e rola em direcao ao
+     * robo (o intake o pega). O Nectar e grande demais para sair e bloqueia a pilha. Nao precisa recolher o anexo.
      */
     private void attachment(Robot r) {
-        boolean retracting = r.attachPrevExt >= Layout.ATTACH_FULL && r.attachExt < Layout.ATTACH_FULL;
-        if (!retracting) return;
+        if (!r.attachDeployed()) return;
         double hl = r.length / 2;
         for (Flower f : flowers) {
             if (f.stack.isEmpty() || f.cooldown > 0) continue;
@@ -298,13 +298,13 @@ public final class Match {
             if (b.isNectar()) continue;
             f.stack.remove(0);
             f.relayout();
-            f.cooldown = 0.4;
+            f.cooldown = Layout.ATTACH_DROP_INTERVAL;
             b.state = Ball.State.FIELD;
             b.x = f.wallX + f.nx * 3.5; b.y = f.wallY + f.ny * 3.5;
             b.z = b.r;
             double dx = r.x - b.x, dy = r.y - b.y, d = Math.max(1e-6, Math.hypot(dx, dy));
             b.vx = dx / d * 35; b.vy = dy / d * 35; b.vz = 0;
-            log.add(String.format("t=%.2f %s tirou Pollen da FLOWER %s com o anexo", t, r.name, f.name));
+            log.add(String.format("t=%.2f %s derrubou Pollen da FLOWER %s com o anexo", t, r.name, f.name));
             return;
         }
     }

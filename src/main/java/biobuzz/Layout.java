@@ -42,6 +42,7 @@ public final class Layout {
     public static final double ATTACH_FULL = 0.9;          // a partir daqui conta como projetado
     public static final double ATTACH_TIP_TO_WALL = 4.9;   // a ponta precisa chegar a ate 4,9 in da parede da FLOWER
     public static final double ATTACH_MAX_MISMATCH = 0.25; // servos devem girar juntos (diferenca maxima entre as posicoes)
+    public static final double ATTACH_DROP_INTERVAL = 0.4; // enquanto projetado e bem posicionado, derruba um Pollen a cada 0,4 s [EST]
 
     // FLOWER (9.7) [EST] offset da abertura em relacao a parede
     public static final double FLOWER_OPEN_Z = 21.5, FLOWER_MIDDLE_Z = 4.0, FLOWER_BASE_Z = 0.4;

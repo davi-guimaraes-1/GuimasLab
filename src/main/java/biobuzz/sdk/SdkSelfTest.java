@@ -88,8 +88,40 @@ public final class SdkSelfTest {
         s3.runRealtime(1.0, keys(KeyEvent.VK_UP));
         check("os dois servos (setPosition 1) projetam o anexo", r3.attachDeployed());
         int st = m3.flowers[0].stack.size();
-        s3.runRealtime(1.5, keys());
-        check("servos de volta a 0: anexo recolhe e tira o Pollen da FLOWER", m3.flowers[0].stack.size() == st - 1);
+        s3.runRealtime(1.5, keys(KeyEvent.VK_UP));
+        check("com os servos em 1 o anexo derruba o Pollen da FLOWER (sem precisar recolher)", m3.flowers[0].stack.size() < st);
+
+        // controle fisico (simulado por injecao): prioridade sobre o teclado e mapeamento FTC
+        Match mc = freeMatch(30, 30, 0);
+        Robot rcc = mc.robots.get(0);
+        CodeSession sc = new CodeSession(mc, rcc, new biobuzz.sdk.demo.DemoTeleOp(), new SdkParams());
+        sc.begin();
+        PadState pad = new PadState();
+        ControllerInput.inject(0, pad);
+        sc.runRealtime(0.3, keys());
+        pad.start = true;
+        sc.runRealtime(0.4, keys());
+        check("START do controle inicia o OpMode", sc.runner.isStarted());
+        pad.start = false;
+        double cx0 = rcc.x;
+        pad.ly = -1f;                                      // stick para cima = frente (convencao do FTC)
+        sc.runRealtime(1.0, keys());
+        check("controle: stick esquerdo para cima move o robo para frente", rcc.x > cx0 + 20);
+        pad.ly = 0f; pad.a = true;
+        sc.runRealtime(2.5, keys());
+        check("controle: botao A liga o shooter", rcc.shooterSpeed > 0.9 * new SdkParams().exitSpeedFromTicks(1210));
+        pad.a = false;
+        double cx1 = rcc.x;
+        sc.runRealtime(1.0, keys(KeyEvent.VK_W));
+        check("com controle conectado ele tem prioridade sobre o teclado", Math.abs(rcc.x - cx1) < 5);
+        biobuzz.sdk.PadState tiny = new PadState(); tiny.lx = 0.03f;
+        com.qualcomm.robotcore.hardware.Gamepad gg = new com.qualcomm.robotcore.hardware.Gamepad();
+        GamepadMapper.apply(tiny, gg);
+        check("zona morta de 5% nos sticks", gg.left_stick_x == 0f);
+        ControllerInput.inject(0, null);
+        sc.stop();
+        ControllerInput.poll();
+        check("sem LWJGL o controle fica indisponivel sem quebrar (status: " + ControllerInput.status() + ")", ControllerInput.status() != null);
         s3.stop();
         s.stop();
         check("OpMode de exemplo terminou sem erro", s.runner.error == null);

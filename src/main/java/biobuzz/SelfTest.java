@@ -402,7 +402,7 @@ public final class SelfTest {
             check("tela inicial desenha a arena e o seletor de posicao (" + e + ")", false);
         }
 
-        // ---------- Anexo coletor de Pollen (2 servos, suposicoes temporarias) ----------
+        // ---------- Anexo coletor de Pollen (2 servos, passivo; suposicoes temporarias) ----------
         Robot[] at = new Robot[1];
         double tipY = ag.length / 2 + ag.attachReach + 2;   // ponta a 2 in da parede da FLOWER de baixo
         m = solo(at, 96, tipY, -Math.PI / 2);
@@ -411,42 +411,44 @@ public final class SelfTest {
         at[0].setAttach(1, 1);
         m.run(0.25);
         boolean metade = at[0].attachExt > 0.3 && at[0].attachExt < 0.7;
-        m.run(0.4);
-        check("os servos movem o anexo gradualmente ate projeta-lo", metade && at[0].attachDeployed() && at[0].attachExt <= 1.0);
         int stackAntes = m.flowers[0].stack.size();
-        at[0].deployAttach(false);
-        m.run(1.5);
-        check("recolher o anexo debaixo da FLOWER tira o Pollen do fundo", m.flowers[0].stack.size() == stackAntes - 1);
-        check("o Pollen rola ate o intake e e coletado", at[0].held.size() == 1);
+        check("a FLOWER ainda nao perde Pollen com o anexo no meio do caminho", metade && m.flowers[0].stack.size() == stackAntes);
+        m.run(0.4);
+        check("os servos movem o anexo gradualmente ate projeta-lo", at[0].attachDeployed() && at[0].attachExt <= 1.0);
+        m.run(0.5);
+        check("estendido, o anexo derruba o Pollen sem precisar recolher", at[0].attachDeployed() && m.flowers[0].stack.size() < stackAntes);
+        m.run(2.5);
+        check("continua derrubando enquanto estiver ativo: esvazia a FLOWER e o intake coleta", m.flowers[0].stack.isEmpty() && at[0].held.size() == 4);
         boolean notInside = true;
         for (Ball ab : m.balls) if (ab.state == Ball.State.FIELD && inside(ab, at[0])) notInside = false;
-        check("o Pollen liberado nao fica dentro do robo", notInside);
-        at[0].deployAttach(true); m.run(0.8); at[0].deployAttach(false); m.run(1.2);
-        check("cada ciclo do anexo tira um Pollen (2o ciclo)", m.flowers[0].stack.size() == stackAntes - 2 && at[0].held.size() == 2);
+        check("o Pollen derrubado nao fica dentro do robo", notInside);
+
+        m = solo(at, 96, tipY, -Math.PI / 2);
+        at[0].deployAttach(true); m.run(0.8);
+        at[0].deployAttach(false); m.run(0.6);
+        int depois = m.flowers[0].stack.size();
+        m.run(2.0);
+        check("recolhido, o anexo para de derrubar", m.flowers[0].stack.size() == depois && depois > 0);
 
         m = solo(at, 96, tipY, -Math.PI / 2);
         Ball bn = m.spawn(Ball.Type.NECTAR_BLUE); bn.state = Ball.State.FLOWER;
         m.flowers[0].stack.add(0, bn); m.flowers[0].relayout();
-        at[0].deployAttach(true); m.run(1.0); at[0].deployAttach(false); m.run(1.0);
-        check("Nectar no fundo da FLOWER nao sai com o anexo", m.flowers[0].stack.get(0) == bn && m.flowers[0].stack.size() == 5);
+        at[0].deployAttach(true); m.run(3.0);
+        check("Nectar no fundo da FLOWER nao sai e bloqueia a pilha", m.flowers[0].stack.get(0) == bn && m.flowers[0].stack.size() == 5);
 
         m = solo(at, 96, ag.length / 2 + ag.attachReach + 12, -Math.PI / 2);
-        at[0].deployAttach(true); m.run(1.0); at[0].deployAttach(false); m.run(1.0);
-        check("fora de alcance (ponta a 12 in da parede) o anexo nao retira", m.flowers[0].stack.size() == 4);
+        at[0].deployAttach(true); m.run(3.0);
+        check("fora de alcance (ponta a 12 in da parede) o anexo nao derruba", m.flowers[0].stack.size() == 4);
 
         m = solo(at, 60, tipY, -Math.PI / 2);
-        at[0].deployAttach(true); m.run(1.0); at[0].deployAttach(false); m.run(1.0);
-        check("desalinhado da FLOWER (36 in ao lado) o anexo nao retira", m.flowers[0].stack.size() == 4);
+        at[0].deployAttach(true); m.run(3.0);
+        check("desalinhado da FLOWER (36 in ao lado) o anexo nao derruba", m.flowers[0].stack.size() == 4);
 
         m = solo(at, 96, tipY, -Math.PI / 2);
-        at[0].deployAttach(true); m.run(0.15); at[0].deployAttach(false); m.run(1.0);
-        check("recolher stackAntes de projetar por completo nao retira", m.flowers[0].stack.size() == 4);
-
-        m = solo(at, 96, tipY, -Math.PI / 2);
-        at[0].setAttach(1, 0); m.run(1.5);
-        check("servos desalinhados (1 e 0) nao projetam o anexo por completo", !at[0].attachDeployed());
-        at[0].setAttach(1, 1); m.run(1.0);
-        check("servos girando juntos projetam o anexo", at[0].attachDeployed());
+        at[0].setAttach(1, 0); m.run(3.0);
+        check("servos desalinhados (1 e 0) nao projetam o anexo por completo e nao derrubam", !at[0].attachDeployed() && m.flowers[0].stack.size() == 4);
+        at[0].setAttach(1, 1); m.run(1.5);
+        check("servos girando juntos projetam o anexo e ele derruba", at[0].attachDeployed() && m.flowers[0].stack.size() < 4);
 
         System.out.println(fails == 0 ? "\nTodos os testes passaram." : "\n" + fails + " teste(s) falharam.");
         System.exit(fails == 0 ? 0 : 1);

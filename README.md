@@ -11,6 +11,17 @@ Veja o passo a passo na conversa. Resumo:
 2. Espere o Gradle sincronizar. Para ver a arena: abra `src/main/java/biobuzz/Viewer.java` e clique no triângulo verde ao lado de `main` (Run 'Viewer.main()'). Para os testes: o mesmo em `SelfTest.java`.
 3. Sem IDE (JDK 17+ instalado): `javac -d out src/main/java/biobuzz/*.java` e depois `java -cp out biobuzz.SelfTest`.
 
+## Testar o TeleOp passo a passo (v5)
+1. Abra o projeto no Android Studio e rode `biobuzz.Viewer`.
+2. Escolha Teste de codigo, o numero de robos e a alianca, e clique na arena para posicionar o AGGRON.
+3. Em "Codigo da equipe" escolha `TeamCode/src/main/java` do projeto Atlas, clique em Compilar TeamCode e selecione `TeleOpAzul`.
+4. Iniciar simulacao. O OpMode entra em INIT; ENTER (ou START do controle) da o START.
+5. Controle: um controle ligado ao PC (Xbox, PlayStation e similares) e lido pelo LWJGL/GLFW (dependencia no `build.gradle`,
+   baixada pelo Gradle) e tem prioridade sobre o teclado. Dois controles = gamepad1 e gamepad2. Se aparecer
+   "biblioteca LWJGL ausente", o Gradle nao baixou os JARs e so o teclado funciona.
+6. Anexo coletor: enquanto os servos estiverem projetados (os dois em ~1,0) e a ponta estiver sob a FLOWER, o Pollen e
+   derrubado sozinho (um a cada 0,4 s), sem precisar recolher.
+
 ## Executar o codigo da equipe (v4)
 O simulador roda o `TeamCode` da Atlas **sem alteracoes**: as fontes .java sao compiladas contra a API do FTC SDK 12.0,
 Pedro Pathing 2.1.2 e FTC Dashboard 0.6.0 (`libs/ftc-stubs.jar`, gerado do dex do projeto) e executadas em tempo real

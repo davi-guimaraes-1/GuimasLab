@@ -10,7 +10,17 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
+def lwjglVersion = '3.3.4'
+def osName = System.getProperty('os.name').toLowerCase()
+def lwjglNatives = osName.contains('win') ? 'natives-windows' :
+    osName.contains('mac') ? (System.getProperty('os.arch').contains('aarch64') ? 'natives-macos-arm64' : 'natives-macos') : 'natives-linux'
+
 dependencies {
+    // controle (gamepad) ligado ao PC, lido por reflexao: opcional (sem estes JARs so funciona o teclado)
+    runtimeOnly "org.lwjgl:lwjgl:$lwjglVersion"
+    runtimeOnly "org.lwjgl:lwjgl-glfw:$lwjglVersion"
+    runtimeOnly "org.lwjgl:lwjgl:$lwjglVersion:$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-glfw:$lwjglVersion:$lwjglNatives"
     // JARs REAIS do Pedro Pathing e do SDK (se houver) devem ficar em libs/real: entram antes dos stubs no classpath
     runtimeOnly fileTree(dir: 'libs/real', include: ['*.jar'])
     // API do FTC SDK 12.0, Pedro Pathing 2.1.2 e FTC Dashboard 0.6.0 gerada do dex do projeto da equipe (somente assinaturas)

@@ -30,7 +30,12 @@ public final class CodeSession {
 
     /** Chame antes de Match.run(): teclado -> gamepad, comandos do codigo -> robo. */
     public void beforeTick(Set<Integer> keys) {
-        if (keys != null) GamepadMapper.apply(keys, runner.op.gamepad1);
+        ControllerInput.poll();
+        PadState p1 = ControllerInput.pad(0), p2 = ControllerInput.pad(1);
+        if (p1 != null) GamepadMapper.apply(p1, runner.op.gamepad1);          // controle fisico tem prioridade
+        else if (keys != null) GamepadMapper.apply(keys, runner.op.gamepad1);
+        if (p2 != null) GamepadMapper.apply(p2, runner.op.gamepad2);
+        if (p1 != null && p1.start && !runner.isStarted()) pressStart();         // START do controle inicia o OpMode
         hw.applyToRobot();
     }
 
@@ -50,7 +55,8 @@ public final class CodeSession {
 
     public List<String> hudLines() {
         List<String> l = new ArrayList<>();
-        l.add("OpMode: " + name + (runner.isStarted() ? " (rodando)" : " (INIT: ENTER = START)"));
+        l.add("OpMode: " + name + (runner.isStarted() ? " (rodando)" : " (INIT: ENTER ou START do controle)"));
+        l.add(ControllerInput.status());
         if (runner.error != null) {
             boolean pedro = false;
             Throwable root = runner.error;
