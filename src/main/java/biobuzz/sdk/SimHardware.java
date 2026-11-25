@@ -49,7 +49,10 @@ public final class SimHardware {
     /** Antes de cada passo do simulador: comandos do codigo -> robo. */
     public void applyToRobot() {
         double a = fl.power, b = fr.power, c = bl.power, d = br.power;      // potencia positiva = roda para frente (direcoes ja ajustadas pela equipe)
-        double y = (a + b + c + d) / 4, x = (a - b - c + d) / 4, rx = (a - b + c - d) / 4;   // frente, direita, giro horario
+        double pFL, pFR, pRL, pRR;                                           // rodas fisicas
+        if (p.wheelLayout == SdkParams.WheelLayout.STANDARD) { pFL = a; pFR = b; pRL = c; pRR = d; }
+        else { pFL = b; pFR = d; pRL = a; pRR = c; }                         // superiorEsquerdo = traseira esquerda, superiorDireito = frente esquerda, ...
+        double y = (pFL + pFR + pRL + pRR) / 4, x = (pFL - pFR - pRL + pRR) / 4, rx = (pFL - pFR + pRL - pRR) / 4;   // frente, direita, giro horario
         robot.drive(y, -x, -rx);
         robot.intakeOn = intake.power > p.intakeThreshold;
         if (transfer.power > p.intakeThreshold) robot.shoot();             // o transfer empurra o Pollen para o shooter

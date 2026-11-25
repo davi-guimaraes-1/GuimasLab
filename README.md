@@ -1,6 +1,6 @@
-# BIOBUZZ Sim (núcleo)
+# GuimasLab
 
-Simulador da arena, do robô e da pontuação da temporada FTC BIOBUZZ (manual TU10).
+GuimasLab: simulador da arena, do robô e da pontuação da temporada FTC BIOBUZZ (manual TU10), que roda o código da equipe.
 Java puro, sem dependências. Unidades: polegadas, segundos, radianos.
 Coordenadas iguais às do Pedro Pathing: origem no canto inferior esquerdo, x para a direita,
 y para cima, heading 0 = +x, anti-horário positivo. Alianças: vermelha à esquerda, azul à direita.
@@ -10,6 +10,14 @@ Veja o passo a passo na conversa. Resumo:
 1. Extraia o zip. Android Studio (ou IntelliJ): File > Open > escolha a pasta `biobuzz-sim` (a que tem o `build.gradle`).
 2. Espere o Gradle sincronizar. Para ver a arena: abra `src/main/java/biobuzz/Viewer.java` e clique no triângulo verde ao lado de `main` (Run 'Viewer.main()'). Para os testes: o mesmo em `SelfTest.java`.
 3. Sem IDE (JDK 17+ instalado): `javac -d out src/main/java/biobuzz/*.java` e depois `java -cp out biobuzz.SelfTest`.
+
+## Disposicao das rodas (v6)
+O TeleOp da Atlas mistura o giro dando +T em `superiorEsquerdo` e `superiorDireito` e -T nos `inferior*`, e usa direcoes
+REVERSE nos `superior*` e FORWARD nos `inferior*`. As duas coisas so fazem sentido se os motores `superior*` estiverem
+no lado esquerdo do robo e os `inferior*` no direito. Esse e o padrao (`ATLAS_SIDES`): `superiorEsquerdo` = traseira
+esquerda, `superiorDireito` = frente esquerda, `inferiorEsquerdo` = traseira direita, `inferiorDireito` = frente direita
+(escolhido por ser o unico que faz o field centric do TeleOp funcionar). Com o layout padrao (superior = frente) o robo nao
+gira. Mude em Menu > Codigo da equipe > Rodas.
 
 ## Testar o TeleOp passo a passo (v5)
 1. Abra o projeto no Android Studio e rode `biobuzz.Viewer`.

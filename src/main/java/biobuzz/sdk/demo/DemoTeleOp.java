@@ -33,10 +33,10 @@ public class DemoTeleOp extends LinearOpMode {
         while (opModeIsActive()) {
             pinpoint.update();
             double y = -gamepad1.left_stick_y, x = gamepad1.left_stick_x, rx = gamepad1.right_stick_x;
-            fl.setPower(y + x + rx);
-            fr.setPower(y - x - rx);
-            bl.setPower(y - x + rx);
-            br.setPower(y + x - rx);
+            fl.setPower(y - x + rx);   // mesma mistura do TeleOp da Atlas: x = strafe (+ direita), rx = giro (+ horario)
+            fr.setPower(y + x + rx);
+            bl.setPower(y + x - rx);
+            br.setPower(y - x - rx);
             shooter.setVelocity(gamepad1.a ? 1210 : 0);
             transfer.setPower(gamepad1.b ? 1 : 0);
             intake.setPower(gamepad1.x ? 0.7 : 0);

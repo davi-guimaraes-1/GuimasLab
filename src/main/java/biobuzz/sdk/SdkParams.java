@@ -2,6 +2,13 @@ package biobuzz.sdk;
 
 /** Parametros que ligam o codigo da equipe (potencias, ticks) ao robo virtual. [EST] = suposicao a calibrar. */
 public final class SdkParams {
+    /**
+     * Disposicao fisica das rodas. ATLAS_SIDES (padrao, inferida do TeleOp): os motores "superior*" ficam no lado
+     * esquerdo do robo e os "inferior*" no direito (por isso as direcoes REVERSE/FORWARD e a mistura de giro do TeleOp so
+     * giram o robo assim); "Esquerdo" = traseira. STANDARD: superior = frente, esquerdo = esquerda.
+     */
+    public enum WheelLayout { ATLAS_SIDES, STANDARD }
+    public WheelLayout wheelLayout = WheelLayout.ATLAS_SIDES;
     // base: velocidades a potencia 1, iguais a MecanumConstants.xVelocity/yVelocity da Atlas
     public double driveMaxForward = 75.17, driveMaxStrafe = 59.33;
     // nomes dos motores de roda (iguais aos do Constants da Atlas)

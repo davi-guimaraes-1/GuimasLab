@@ -172,6 +172,56 @@ public final class SdkSelfTest {
                 st2.runRealtime(0.3, keys());
                 st2.stop();
                 check("TeleOpAzul terminou sem erro", st2.runner.error == null);
+
+                // giro (Q/E), dpad (heading hold) e field centric do TeleOpAzul original
+                Match mg = freeMatch(30, 30, 0);
+                Robot rg = mg.robots.get(0);
+                CodeSession sg = new CodeSession(mg, rg, TeamCodeLoader.instantiate(out, teleop), new SdkParams());
+                sg.begin(); sg.runRealtime(0.6, keys()); sg.pressStart(); sg.runRealtime(0.5, keys());
+                double g0 = rg.h;
+                sg.runRealtime(0.8, keys(KeyEvent.VK_E));
+                check("TeleOpAzul: E (stick direito para a direita) gira o robo no sentido horario", wrap(rg.h - g0) < -0.4);
+                g0 = rg.h;
+                sg.runRealtime(0.8, keys(KeyEvent.VK_Q));
+                check("TeleOpAzul: Q gira no sentido anti-horario", wrap(rg.h - g0) > 0.4);
+                sg.runRealtime(3.0, keys(KeyEvent.VK_LEFT));
+                check("TeleOpAzul: dpad esquerda leva o heading a +90 graus", Math.abs(wrap(rg.h - Math.PI / 2)) < 0.2);
+                sg.runRealtime(3.0, keys(KeyEvent.VK_RIGHT));
+                check("TeleOpAzul: dpad direita leva o heading a -90 graus", Math.abs(wrap(rg.h + Math.PI / 2)) < 0.2);
+                sg.runRealtime(3.0, keys(KeyEvent.VK_DOWN));
+                check("TeleOpAzul: dpad baixo leva o heading a 180 graus", Math.abs(Math.abs(wrap(rg.h)) - Math.PI) < 0.2);
+                sg.runRealtime(3.0, keys(KeyEvent.VK_UP));
+                check("TeleOpAzul: dpad cima leva o heading a 0 grau", Math.abs(wrap(rg.h)) < 0.2);
+                sg.stop();
+                for (int variant = 0; variant < 2; variant++) {
+                    Match mf = freeMatch(30, 30, 0);
+                    Robot rf2 = mf.robots.get(0);
+                    CodeSession sf = new CodeSession(mf, rf2, TeamCodeLoader.instantiate(out, teleop), new SdkParams());
+                    sf.begin(); sf.runRealtime(0.6, keys()); sf.pressStart(); sf.runRealtime(0.5, keys());
+                    if (variant == 1) sf.runRealtime(3.0, keys(KeyEvent.VK_LEFT));     // robo virado para +90 graus
+                    double fx = rf2.x, fy = rf2.y;
+                    sf.runRealtime(0.5, keys(KeyEvent.VK_D));
+                    double dxD = rf2.x - fx, dyD = rf2.y - fy;
+                    sf.runRealtime(0.5, keys());
+                    fx = rf2.x; fy = rf2.y;
+                    sf.runRealtime(0.5, keys(KeyEvent.VK_W));
+                    double dxW = rf2.x - fx, dyW = rf2.y - fy;
+                    String tag = variant == 0 ? "heading 0" : "heading 90";
+                    check("TeleOpAzul field centric (" + tag + "): D move o robo para +X do campo", dxD > 10 && Math.abs(dyD) < 0.4 * dxD);
+                    check("TeleOpAzul field centric (" + tag + "): W move o robo para +Y do campo", dyW > 10 && Math.abs(dxW) < 0.4 * dyW);
+                    sf.stop();
+                }
+                // com a disposicao padrao (superior = frente) a mistura de giro do TeleOp nao gira o robo
+                Match ms2 = freeMatch(30, 30, 0);
+                Robot rs2 = ms2.robots.get(0);
+                SdkParams std = new SdkParams();
+                std.wheelLayout = SdkParams.WheelLayout.STANDARD;
+                CodeSession ss2 = new CodeSession(ms2, rs2, TeamCodeLoader.instantiate(out, teleop), std);
+                ss2.begin(); ss2.runRealtime(0.6, keys()); ss2.pressStart(); ss2.runRealtime(0.5, keys());
+                double s0 = rs2.h;
+                ss2.runRealtime(1.0, keys(KeyEvent.VK_E));
+                check("disposicao padrao das rodas: o giro do TeleOp nao faz o robo girar (por isso o padrao e ATLAS_SIDES)", Math.abs(wrap(rs2.h - s0)) < 0.05);
+                ss2.stop();
             }
         } else {
             System.out.println("(TeleOp original ignorado: informe -Dbiobuzz.teamcode=<TeamCode/src/main/java>)");

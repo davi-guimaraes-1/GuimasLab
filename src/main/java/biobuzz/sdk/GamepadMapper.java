@@ -15,7 +15,7 @@ public final class GamepadMapper {
         g.left_stick_x = axis(k, KeyEvent.VK_A, KeyEvent.VK_D);
         g.left_stick_y = axis(k, KeyEvent.VK_W, KeyEvent.VK_S);          // FTC: para frente e negativo
         g.right_stick_x = axis(k, KeyEvent.VK_Q, KeyEvent.VK_E);
-        g.right_stick_y = axis(k, KeyEvent.VK_Z, KeyEvent.VK_X);;
+        g.right_stick_y = 0;
         g.dpad_up = k.contains(KeyEvent.VK_UP);
         g.dpad_down = k.contains(KeyEvent.VK_DOWN);
         g.dpad_left = k.contains(KeyEvent.VK_LEFT);

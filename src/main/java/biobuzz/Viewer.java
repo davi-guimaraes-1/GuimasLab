@@ -190,7 +190,7 @@ public final class Viewer {
         if (cs == null) return hud(m, me, aim);
         Match.Score[] s = m.score();
         List<String> l = new java.util.ArrayList<>();
-        l.add("BIOBUZZ SIM   TESTE DE CODIGO (livre)");
+        l.add("GuimasLab   TESTE DE CODIGO (livre)");
         l.add("#R VERMELHO " + s[0].total() + "  HIVE P " + m.redHive.pollenIn + "/" + Layout.TIP_POLLEN + " N " + m.redHive.nectarIn + "/" + Layout.TIP_NECTAR);
         l.add("#B AZUL     " + s[1].total() + "  HIVE P " + m.blueHive.pollenIn + "/" + Layout.TIP_POLLEN + " N " + m.blueHive.nectarIn + "/" + Layout.TIP_NECTAR);
         l.add(String.format("AGGRON x %.1f y %.1f head %.0f  seguro %d", me.x, me.y, Math.toDegrees(me.h), me.held.size()));
@@ -211,8 +211,8 @@ public final class Viewer {
         Match.Score[] s = m.score();
         int t = (int) m.t;
         List<String> l = new java.util.ArrayList<>();
-        l.add(m.freePlay ? "BIOBUZZ SIM   TESTE DE CODIGO (livre)"
-            : "BIOBUZZ SIM   " + String.format("%d:%02d", t / 60, t % 60) + "   " + m.phase());
+        l.add(m.freePlay ? "GuimasLab   TESTE DE CODIGO (livre)"
+            : "GuimasLab   " + String.format("%d:%02d", t / 60, t % 60) + "   " + m.phase());
         l.add("#R VERMELHO " + s[0].total() + "  (auto " + s[0].auto() + ", tele " + s[0].teleop() + ")  RP " + s[0].rp());
         l.add("#B AZUL     " + s[1].total() + "  (auto " + s[1].auto() + ", tele " + s[1].teleop() + ")  RP " + s[1].rp());
         l.add("#R HIVE V  Pollen " + m.redHive.pollenIn + "/" + Layout.TIP_POLLEN + "  Nectar " + m.redHive.nectarIn + "/" + Layout.TIP_NECTAR + "  tips " + m.redHive.tips());
@@ -261,7 +261,9 @@ public final class Viewer {
             if (sess[0] != null) { sess[0].stop(); sess[0] = null; }
             if (cfg.opMode != null && cfg.teamCodeClasses != null) {
                 try {
-                    sess[0] = new CodeSession(cur[0], cur[0].robots.get(0), TeamCodeLoader.instantiate(cfg.teamCodeClasses, cfg.opMode), new SdkParams());
+                    SdkParams sp = new SdkParams();
+                    sp.wheelLayout = cfg.wheelLayout;
+                    sess[0] = new CodeSession(cur[0], cur[0].robots.get(0), TeamCodeLoader.instantiate(cfg.teamCodeClasses, cfg.opMode), sp);
                     sess[0].begin();
                 } catch (Throwable t) {
                     System.err.println("[sim] nao foi possivel iniciar o OpMode " + cfg.opMode + ": " + t);
@@ -280,7 +282,7 @@ public final class Viewer {
         startSession.run();
         bind.run();
         Runnable build = () -> {
-            JFrame fr = new JFrame("BIOBUZZ Sim - " + (cfg.mode == SimConfig.Mode.ROUND ? "Round" : "Teste de codigo"));
+            JFrame fr = new JFrame("GuimasLab - " + (cfg.mode == SimConfig.Mode.ROUND ? "Round" : "Teste de codigo"));
             frame[0] = fr;
             JPanel p = new JPanel() {
                 @Override protected void paintComponent(Graphics g) {

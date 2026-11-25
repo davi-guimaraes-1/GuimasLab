@@ -165,7 +165,7 @@ public final class Menu {
     public static void show(SimConfig cfg, Consumer<SimConfig> onStart) {
         Runnable build = () -> {
             StartPicker picker = new StartPicker(cfg);
-            JFrame f = new JFrame("BIOBUZZ Sim - Configuracao");
+            JFrame f = new JFrame("GuimasLab - Configuracao");
             JLabel status = new JLabel();
             JButton start = new JButton("Iniciar simulacao");
             FieldPanel[] fpr = new FieldPanel[1];
@@ -202,6 +202,9 @@ public final class Menu {
             // codigo da equipe (so no Teste de codigo)
             JTextField srcField = new JTextField(cfg.teamCodeSrc, 18);
             JButton browse = new JButton("..."), compile = new JButton("Compilar TeamCode");
+            JComboBox<String> layout = new JComboBox<>(new String[] {"Rodas: superior = lado esquerdo (inferido da Atlas)", "Rodas: padrao (superior = frente)"});
+            layout.addActionListener(e -> cfg.wheelLayout = layout.getSelectedIndex() == 0
+                ? biobuzz.sdk.SdkParams.WheelLayout.ATLAS_SIDES : biobuzz.sdk.SdkParams.WheelLayout.STANDARD);
             JComboBox<String> ops = new JComboBox<>();
             JLabel codeStatus = new JLabel("<html>Opcional: escolha a pasta <i>TeamCode/src/main/java</i> do projeto da equipe.</html>");
             String NONE = "(nenhum: dirigir com o teclado)";
@@ -234,13 +237,13 @@ public final class Menu {
                 cfg.opMode = (sel == null || NONE.equals(sel)) ? null : sel.toString();
             });
             start.addActionListener(e -> { if (picker.canStart()) { f.dispose(); onStart.accept(cfg); } });
-            JLabel title = new JLabel("BIOBUZZ Sim");
+            JLabel title = new JLabel("GuimasLab");
             title.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 20));
             JPanel codeBox = new JPanel(new GridLayout(0, 1, 3, 3));
             codeBox.setBorder(BorderFactory.createTitledBorder("Codigo da equipe (Teste de codigo)"));
             JPanel pathRow = new JPanel(new BorderLayout(4, 0));
             pathRow.add(srcField, BorderLayout.CENTER); pathRow.add(browse, BorderLayout.EAST);
-            codeBox.add(pathRow); codeBox.add(compile); codeBox.add(ops); codeBox.add(codeStatus);
+            codeBox.add(pathRow); codeBox.add(compile); codeBox.add(ops); codeBox.add(layout); codeBox.add(codeStatus);
             for (java.awt.Component c : new java.awt.Component[] {title, new JLabel("Modo"), round, test, new JLabel("Robos"), r1, r4,
                 new JLabel("Alianca"), red, blue, codeBox, status, start}) {
                 ((JComponent) c).setAlignmentX(0f);
